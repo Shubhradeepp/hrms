@@ -1,3 +1,5 @@
+import CompanyLogo from '../components/CompanyLogo';
+
 export const ROUTES = {
   LOGIN: '/login',
   HOME: '/home',
@@ -32,7 +34,7 @@ export const MENU_ITEMS = [
 
 export const COMPANY_INFO = {
   name: 'CSIT',
-  logo: '🌟',
+  logo: CompanyLogo,
   description: 'Employee Management System',
   version: '1.0.0'
 };

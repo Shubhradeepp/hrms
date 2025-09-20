@@ -1,7 +1,9 @@
+// src/components/AppRoutes.jsx
 import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import CustomLoader from './layout/CustomLoader';
+
 // Lazy load components
 const Login = lazy(() => import('../pages/auth/Login'));
 const MainLayout = lazy(() => import('./layout/MainLayout'));
@@ -39,7 +41,16 @@ const AppRoutes = () => {
           <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
             <Route path="home" element={<Suspense fallback={<CustomLoader />}><Home /></Suspense>} />
             <Route path="about" element={<Suspense fallback={<CustomLoader />}><About /></Suspense>} />
-            <Route path="dashboard" element={<Suspense fallback={<CustomLoader />}><Dashboard /></Suspense>} />
+            <Route
+              path="dashboard"
+              element={
+                <ProtectedRoute requiredRoles={['TEAM MANAGER', 'HR', 'ADMIN']}>
+                  <Suspense fallback={<CustomLoader />}>
+                    <Dashboard />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
           </Route>
 
           {/* Catch-all route for invalid paths */}

@@ -1,8 +1,12 @@
+// src/pages/about/About.jsx
 import React from 'react';
+import { useAuth } from '../../hooks/useAuth';
 import { theme } from '../../theme/theme';
 import { COMPANY_INFO } from '../../utils/constants';
 
 const About = () => {
+  const { user } = useAuth();
+
   const features = [
     {
       icon: '⏰',
@@ -155,12 +159,12 @@ const About = () => {
                 transition: theme.transitions.medium
               }}
               onMouseOver={(e) => {
-                e.target.style.transform = 'translateY(-4px)';
-                e.target.style.boxShadow = theme.shadows.large;
+                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.boxShadow = theme.shadows.large;
               }}
               onMouseOut={(e) => {
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = theme.shadows.small;
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = theme.shadows.small;
               }}
             >
               <div style={{
@@ -190,34 +194,36 @@ const About = () => {
         </div>
       </div>
 
-      {/* Contact Section */}
-      <div className="card" style={{
-        padding: theme.spacing.xl,
-        textAlign: 'center',
-        backgroundColor: `${theme.colors.primary}10`
-      }}>
-        <h3 style={{
-          color: theme.colors.text.primary,
-          marginBottom: theme.spacing.md,
-          fontSize: '24px'
+      {/* Contact Section - Hidden for EMPLOYEE role */}
+      {user?.role && user.role !== 'EMPLOYEE' && (
+        <div className="card" style={{
+          padding: theme.spacing.xl,
+          textAlign: 'center',
+          backgroundColor: `${theme.colors.primary}10`
         }}>
-          Need Support?
-        </h3>
-        <p style={{
-          color: theme.colors.text.secondary,
-          marginBottom: theme.spacing.lg,
-          fontSize: '16px'
-        }}>
-          Our team is here to help you get the most out of your employee management system.
-        </p>
-        <button className="btn-primary" style={{
-          padding: '16px 32px',
-          fontSize: '16px',
-          fontWeight: 'bold'
-        }}>
-          Contact Support
-        </button>
-      </div>
+          <h3 style={{
+            color: theme.colors.text.primary,
+            marginBottom: theme.spacing.md,
+            fontSize: '24px'
+          }}>
+            Need Support?
+          </h3>
+          <p style={{
+            color: theme.colors.text.secondary,
+            marginBottom: theme.spacing.lg,
+            fontSize: '16px'
+          }}>
+            Our team is here to help you get the most out of your employee management system.
+          </p>
+          <button className="btn-primary" style={{
+            padding: '16px 32px',
+            fontSize: '16px',
+            fontWeight: 'bold'
+          }}>
+            Contact Support
+          </button>
+        </div>
+      )}
     </div>
   );
 };

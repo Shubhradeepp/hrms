@@ -1,9 +1,10 @@
-// src/components/layout/SideNav.jsx - UPDATED FOR REACT ROUTER
+// src/components/layout/SideNav.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { theme } from '../../theme/theme';
 import { COMPANY_INFO } from '../../utils/constants';
+import CompanyLogo from '../../components/CompanyLogo';
 
 const SideNav = ({ collapsed, onToggle }) => {
   const navigate = useNavigate();
@@ -11,18 +12,24 @@ const SideNav = ({ collapsed, onToggle }) => {
   const { logout, user } = useAuth();
   const [isMobile, setIsMobile] = useState(false);
 
-  // Updated menu items with correct paths
+  // Updated menu items with requiredRoles
   const menuItems = [
-    { path: '/home', label: 'Home', icon: '🏠', key: 'home' },
-    { path: '/about', label: 'About', icon: 'ℹ️', key: 'about' },
-    { path: '/dashboard', label: 'Dashboard', icon: '📊', key: 'dashboard' }
+    { path: '/home', label: 'Home', icon: '🏠', key: 'home', requiredRoles: ['EMPLOYEE', 'TEAM MANAGER', 'HR', 'ADMIN'] },
+    { path: '/edit', label: 'Home', icon: '🏠', key: 'home', requiredRoles: ['TEAM MANAGER', 'HR', 'ADMIN'] },
+    { path: '/about', label: 'About', icon: 'ℹ️', key: 'about', requiredRoles: ['EMPLOYEE', 'TEAM MANAGER', 'HR', 'ADMIN'] },
+    { path: '/dashboard', label: 'Dashboard', icon: '📊', key: 'dashboard', requiredRoles: ['', 'TEAM MANAGER', 'HR', 'ADMIN'] },
   ];
+
+  // Filter menu items based on user role
+  const filteredMenuItems = menuItems.filter(item =>
+    user?.role ? item.requiredRoles.includes(user.role) : false
+  );
 
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
@@ -44,7 +51,7 @@ const SideNav = ({ collapsed, onToggle }) => {
     <>
       {/* Mobile Backdrop */}
       {isMobile && !collapsed && (
-        <div 
+        <div
           style={{
             position: 'fixed',
             top: 0,
@@ -58,7 +65,7 @@ const SideNav = ({ collapsed, onToggle }) => {
         />
       )}
 
-      <div 
+      <div
         className={`sidebar ${!collapsed ? 'open' : ''} sidebar-transition`}
         style={{
           width: collapsed && !isMobile ? '70px' : '260px',
@@ -82,43 +89,15 @@ const SideNav = ({ collapsed, onToggle }) => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          minHeight: '80px'
+          minHeight: '80px',
+          overflow: 'visible'  // Ensure no overflow hides the image
         }}>
           {(!collapsed || isMobile) && (
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              <div style={{ 
-                width: '40px', 
-                height: '40px', 
-                backgroundColor: theme.colors.primary, 
-                borderRadius: theme.borderRadius.round,
-                marginRight: theme.spacing.md,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '20px'
-              }}>
-                {COMPANY_INFO.logo}
-              </div>
-              <div>
-                <h2 style={{ 
-                  margin: 0, 
-                  fontWeight: 'bold', 
-                  color: theme.colors.text.primary,
-                  fontSize: '20px'
-                }}>
-                  {COMPANY_INFO.name}
-                </h2>
-                <p style={{ 
-                  margin: 0, 
-                  fontSize: '12px', 
-                  color: theme.colors.text.secondary 
-                }}>
-                  Employee Portal
-                </p>
-              </div>
+              <CompanyLogo size="md" />
             </div>
           )}
-          
+
           <button
             onClick={onToggle}
             style={{
@@ -159,18 +138,24 @@ const SideNav = ({ collapsed, onToggle }) => {
                 {user.name?.charAt(0).toUpperCase() || 'U'}
               </div>
               <div>
-                <div style={{ 
-                  fontWeight: '600', 
+                <div style={{
+                  fontWeight: '600',
                   color: theme.colors.text.primary,
                   fontSize: '14px'
                 }}>
                   {user.name || 'User'}
                 </div>
-                <div style={{ 
-                  fontSize: '12px', 
-                  color: theme.colors.text.secondary 
+                <div style={{
+                  fontSize: '12px',
+                  color: theme.colors.text.secondary
                 }}>
                   {user.email}
+                </div>
+                <div style={{
+                  fontSize: '12px',
+                  color: theme.colors.text.secondary
+                }}>
+                  Role: {user.role || 'N/A'}
                 </div>
               </div>
             </div>
@@ -178,12 +163,12 @@ const SideNav = ({ collapsed, onToggle }) => {
         )}
 
         {/* Navigation Menu */}
-        <div style={{ 
-          flex: 1, 
+        <div style={{
+          flex: 1,
           paddingTop: theme.spacing.md,
           overflowY: 'auto'
         }}>
-          {menuItems.map((item) => {
+          {filteredMenuItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
               <div
@@ -213,8 +198,8 @@ const SideNav = ({ collapsed, onToggle }) => {
                   }
                 }}
               >
-                <span style={{ 
-                  fontSize: '20px', 
+                <span style={{
+                  fontSize: '20px',
                   marginRight: (collapsed && !isMobile) ? '0' : theme.spacing.md,
                   minWidth: '20px',
                   textAlign: 'center'
@@ -232,8 +217,8 @@ const SideNav = ({ collapsed, onToggle }) => {
         </div>
 
         {/* Footer Actions */}
-        <div style={{ 
-          padding: theme.spacing.lg, 
+        <div style={{
+          padding: theme.spacing.lg,
           borderTop: `1px solid ${theme.colors.lightGray}`,
           backgroundColor: theme.colors.background
         }}>
@@ -249,7 +234,7 @@ const SideNav = ({ collapsed, onToggle }) => {
               fontSize: '14px'
             }}
           >
-            <span style={{ 
+            <span style={{
               marginRight: (collapsed && !isMobile) ? '0' : theme.spacing.sm,
               fontSize: '16px'
             }}>

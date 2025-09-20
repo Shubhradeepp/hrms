@@ -1,4 +1,4 @@
-// src/hooks/useAuth.js - UPDATED FOR REACT ROUTER
+// src/hooks/useAuth.js (unchanged)
 import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 

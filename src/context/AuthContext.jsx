@@ -1,4 +1,4 @@
-// src/context/AuthContext.jsx - UPDATED FOR REACT ROUTER
+// src/context/AuthContext.jsx
 import React, { createContext, useState, useEffect } from 'react';
 
 export const AuthContext = createContext();
@@ -14,11 +14,17 @@ export const AuthProvider = ({ children }) => {
   });
 
   const login = (email, password) => {
-    // Any email is valid for login
     if (email && password) {
+      // Assign dummy role based on email for demo purposes
+      let role = 'EMPLOYEE';
+      if (email.endsWith('@admin.com')) role = 'ADMIN';
+      else if (email.endsWith('@hr.com')) role = 'HR';
+      else if (email.endsWith('@team.com')) role = 'TEAM MANAGER';
+
       const userData = {
         email,
         name: email.split('@')[0],
+        role, // Add role to user data
         loginTime: new Date().toISOString()
       };
       
@@ -40,7 +46,6 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    // Check authentication status on mount
     const authStatus = localStorage.getItem('isAuthenticated');
     const userData = localStorage.getItem('user');
     
