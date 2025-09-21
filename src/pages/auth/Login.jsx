@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { loginStart, loginSuccess } from '../../store/slices/authSlice';
 import { useAuth } from '../../hooks/useAuth';
 import { theme } from '../../theme/theme';
 import { COMPANY_INFO } from '../../utils/constants';
@@ -8,6 +10,7 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login, isAuthenticated, loading, error } = useAuth();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,8 +22,24 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    await login(email, password);
-    // The useEffect will handle the redirect when isAuthenticated becomes true
+    dispatch(loginStart());
+    const success = await login(email, password);
+    
+    if (success) {
+      let role = 'EMPLOYEE';
+      if (email.endsWith('@admin.com')) role = 'ADMIN';
+      else if (email.endsWith('@hr.com')) role = 'HR';
+      else if (email.endsWith('@team.com')) role = 'TEAM MANAGER';
+
+      const userData = {
+        email,
+        name: email.split('@')[0],
+        role,
+        loginTime: new Date().toISOString()
+      };
+      
+      dispatch(loginSuccess({ user: userData, token: null }));
+    }
   };
 
   const handleKeyPress = (e) => {

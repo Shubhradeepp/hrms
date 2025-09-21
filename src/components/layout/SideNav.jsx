@@ -1,4 +1,3 @@
-// src/components/layout/SideNav.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
@@ -12,15 +11,12 @@ const SideNav = ({ collapsed, onToggle }) => {
   const { logout, user } = useAuth();
   const [isMobile, setIsMobile] = useState(false);
 
-  // Updated menu items with requiredRoles
   const menuItems = [
     { path: '/home', label: 'Home', icon: '🏠', key: 'home', requiredRoles: ['EMPLOYEE', 'TEAM MANAGER', 'HR', 'ADMIN'] },
-    { path: '/edit', label: 'Home', icon: '🏠', key: 'home', requiredRoles: ['TEAM MANAGER', 'HR', 'ADMIN'] },
     { path: '/about', label: 'About', icon: 'ℹ️', key: 'about', requiredRoles: ['EMPLOYEE', 'TEAM MANAGER', 'HR', 'ADMIN'] },
-    { path: '/dashboard', label: 'Dashboard', icon: '📊', key: 'dashboard', requiredRoles: ['', 'TEAM MANAGER', 'HR', 'ADMIN'] },
+    { path: '/dashboard', label: 'Dashboard', icon: '📊', key: 'dashboard', requiredRoles: ['TEAM MANAGER', 'HR', 'ADMIN'] },
   ];
 
-  // Filter menu items based on user role
   const filteredMenuItems = menuItems.filter(item =>
     user?.role ? item.requiredRoles.includes(user.role) : false
   );
@@ -49,7 +45,6 @@ const SideNav = ({ collapsed, onToggle }) => {
 
   return (
     <>
-      {/* Mobile Backdrop */}
       {isMobile && !collapsed && (
         <div
           style={{
@@ -68,7 +63,8 @@ const SideNav = ({ collapsed, onToggle }) => {
       <div
         className={`sidebar ${!collapsed ? 'open' : ''} sidebar-transition`}
         style={{
-          width: collapsed && !isMobile ? '70px' : '260px',
+          width: collapsed ? '70px' : '260px',
+          maxWidth: '90%',
           height: '100vh',
           backgroundColor: theme.colors.white,
           borderRight: `1px solid ${theme.colors.lightGray}`,
@@ -82,7 +78,6 @@ const SideNav = ({ collapsed, onToggle }) => {
           boxShadow: theme.shadows.medium
         }}
       >
-        {/* Header */}
         <div style={{
           padding: theme.spacing.lg,
           borderBottom: `1px solid ${theme.colors.lightGray}`,
@@ -90,33 +85,36 @@ const SideNav = ({ collapsed, onToggle }) => {
           alignItems: 'center',
           justifyContent: 'space-between',
           minHeight: '80px',
-          overflow: 'visible'  // Ensure no overflow hides the image
+          overflow: 'visible'
         }}>
-          {(!collapsed || isMobile) && (
+          {(!collapsed) && (
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <CompanyLogo size="md" />
             </div>
           )}
 
-          <button
-            onClick={onToggle}
-            style={{
-              background: 'none',
-              border: 'none',
-              fontSize: '20px',
-              cursor: 'pointer',
-              padding: theme.spacing.sm,
-              borderRadius: theme.borderRadius.small,
-              color: theme.colors.text.secondary,
-              transition: theme.transitions.fast
-            }}
-          >
-            {collapsed ? '→' : '←'}
-          </button>
+          {!collapsed && (
+            <button
+              onClick={onToggle}
+              style={{
+                background: 'none',
+                border: 'none',
+                fontSize: '24px',
+                cursor: 'pointer',
+                padding: theme.spacing.sm,
+                borderRadius: theme.borderRadius.small,
+                color: collapsed ? theme.colors.text.secondary : theme.colors.primary,
+                transition: theme.transitions.fast
+              }}
+            >
+              ☰
+            </button>
+          )}
+
         </div>
 
         {/* User Info */}
-        {(!collapsed || isMobile) && user && (
+        {!collapsed && user && (
           <div style={{
             padding: theme.spacing.lg,
             borderBottom: `1px solid ${theme.colors.lightGray}`,
@@ -217,32 +215,34 @@ const SideNav = ({ collapsed, onToggle }) => {
         </div>
 
         {/* Footer Actions */}
-        <div style={{
-          padding: theme.spacing.lg,
-          borderTop: `1px solid ${theme.colors.lightGray}`,
-          backgroundColor: theme.colors.background
-        }}>
-          <button
-            onClick={handleLogout}
-            className="btn-secondary"
-            style={{
-              width: '100%',
-              padding: theme.spacing.md,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: (collapsed && !isMobile) ? 'center' : 'flex-start',
-              fontSize: '14px'
-            }}
-          >
-            <span style={{
-              marginRight: (collapsed && !isMobile) ? '0' : theme.spacing.sm,
-              fontSize: '16px'
-            }}>
-              🚪
-            </span>
-            {(!collapsed || isMobile) && 'Logout'}
-          </button>
-        </div>
+        {!collapsed && (
+          <div style={{
+            padding: theme.spacing.lg,
+            borderTop: `1px solid ${theme.colors.lightGray}`,
+            backgroundColor: theme.colors.background
+          }}>
+            <button
+              onClick={handleLogout}
+              className="btn-secondary"
+              style={{
+                width: '100%',
+                padding: theme.spacing.md,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: (collapsed && !isMobile) ? 'center' : 'flex-start',
+                fontSize: '14px'
+              }}
+            >
+              <span style={{
+                marginRight: (collapsed && !isMobile) ? '0' : theme.spacing.sm,
+                fontSize: '16px'
+              }}>
+                🚪
+              </span>
+              {(!collapsed || isMobile) && 'Logout'}
+            </button>
+          </div>
+        )}
       </div>
     </>
   );

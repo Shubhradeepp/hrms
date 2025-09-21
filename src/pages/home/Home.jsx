@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { useAuth } from '../../hooks/useAuth';
 import { theme } from '../../theme/theme';
 
 const Home = () => {
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth(); // Moved useAuth to top level
   const [currentTime, setCurrentTime] = useState(new Date());
+  const reduxAuthState = useSelector((state) => state.auth);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -13,6 +15,12 @@ const Home = () => {
 
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    console.log('Context API State (useAuth):', { isAuthenticated, user });
+    console.log('Redux Auth State:', reduxAuthState);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty array to run only on mount
 
   const statsData = [
     {
